@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift Wheel App</title>
+    <style>
+        /* --- CSS STYLES --- */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --gray-light: #f3f4f6;
+            --text: #1f2937;
+            --white: #ffffff;
+            --overlay: rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            background-color: #e5e7eb;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Mobile Container */
+        .app-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--white);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+
+        /* Header */
+        header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            background: var(--white);
+            z-index: 10;
+            position: relative;
+        }
+
+        .menu-btn { font-size: 24px; cursor: pointer; }
+        .app-title { font-weight: bold; font-size: 18px; }
+
+        /* Sidebar Menu */
+        .sidebar {
+            position: absolute;
+            top: 0;
+            right: -250px;
+            width: 250px;
+            height: 100%;
+            background: var(--white);
+            box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+            transition: 0.3s ease;
+            z-index: 20;
+            padding-top: 60px;
+        }
+        .sidebar.active { right: 0; }
+        .sidebar-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay);
+            z-index: 15;
+            display: none;
+        }
+        .sidebar-overlay.active { display: block; }
+        
+        .menu-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .menu-item:hover { background: var(--gray-light); }
+        .close-menu { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; }
+
+        /* Views Utility */
+        .view { display: none; padding: 20px; animation: fadeIn 0.3s; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- DASHBOARD (Image 1) --- */
+        .wheel-container {
+            background: var(--gray-light);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+        }
+        .wheel-wrapper {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid #333;
+            margin: 0 auto 15px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        .wheel-inner {
+            width: 100%; height: 100%;
+            background: conic-gradient(
+                #ffadad 0deg 45deg, #ffd6a5 45deg 90deg, 
+                #fdffb6 90deg 135deg, #caffbf 135deg 180deg, 
+                #9bf6ff 180deg 225deg, #a0c4ff 225deg 270deg, 
+                #bdb2ff 270deg 315deg, #ffc6ff 315deg 360deg
+            );
+        }
+        .pointer {
+            width: 0; height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid #333;
+            position: absolute;
+            top: 15px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+        
+        .run-btn {
+            background: var(--white);
+            border: 2px solid #333;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 #333;
+            transition: 0.1s;
+        }
+        .run-btn:active { box-shadow: 1px 1px 0 #333; transform: translate(2px, 2px); }
+        .wheel-text { font-size: 12px; margin-top: 10px; color: #666; }
+
+        /* Tabs */
+        .tabs { display: flex; border: 1px solid #333; border-radius: 5px; overflow: hidden; margin-top: 10px; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; background: #fff; }
+        .tab.active { background: #ddd; font-weight: bold; }
+        .tab-content { padding: 20px; border: 1px solid #ddd; border-top: none; min-height: 100px; display: none; }
+        .tab-content.active { display: block; }
+
+        /* --- PROFILE (Image 2) --- */
+        .back-nav { font-size: 18px; margin-bottom: 20px; cursor: pointer; color: #555; }
+        .profile-img-container {
+            width: 100px; height: 100px; margin: 0 auto 30px; position: relative;
+        }
+        .profile-img { width: 100%; height: 100%; border-radius: 50%; border: 2px solid #333; object-fit: cover; }
+        .edit-badge {
+            position: absolute; bottom: 0; right: 0;
+            background: var(--white); border: 1px solid #333;
+            border-radius: 50%; width: 30px; height: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; cursor: pointer;
+        }
+        
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group label { display: block; font-size: 14px; margin-bottom: 5px; font-weight: bold; }
+        .input-wrapper { display: flex; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .input-wrapper input { border: none; outline: none; flex: 1; font-size: 16px; background: transparent; }
+        .edit-icon { font-size: 14px; color: var(--primary); margin-left: 10px; cursor: pointer; }
+        
+        .unique-id {
+            margin-top: 30px; padding: 15px;
+            border: 1px dashed #333; text-align: center;
+            background: var(--gray-light);
+        }
+
+        /* --- SETTINGS (Image 3) --- */
+        .settings-btn {
+            width: 100%; padding: 15px;
+            background: var(--white); border: 1px solid #ccc;
+            text-align: left; margin-bottom: 15px;
+            border-radius: 8px; cursor: pointer; font-size: 16px;
+            display: flex; justify-content: space-between;
+        }
+        .logout-btn {
+            margin-top: 40px; border: 1px solid var(--primary);
+            color: var(--primary); text-align: center; justify-content: center;
+        }
+
+        /* Modal (Popup) */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--overlay); z-index: 50;
+            display: none; align-items: center; justify-content: center;
+        }
+        .modal {
+            background: var(--white); width: 90%; max-width: 320px;
+            padding: 20px; border-radius: 10px; border: 2px solid #333;
+            position: relative;
+        }
+        .close-modal { position: absolute; top: 10px; right: 15px; font-weight: bold; cursor: pointer; }
+        .modal h3 { margin-bottom: 15px; font-size: 16px; }
+        .modal input {
+            width: 100%; padding: 8px; margin-bottom: 10px;
+            border: 1px solid #ccc; border-radius: 4px;
+        }
+        .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-cancel { flex: 1; padding: 8px; background: #eee; border: 1px solid #ccc; cursor: pointer; }
+        .btn-save { flex: 1; padding: 8px; background: var(--primary); color: white; border: none; cursor: pointer; }
+        
+        .success-msg {
+            color: green; font-size: 14px; text-align: center;
+            margin-top: 20px; display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <div class="app-title" id="page-title">Home</div>
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <div class="sidebar-overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <div class="close-menu" onclick="toggleMenu()">×</div>
+        <div class="menu-item" onclick="navigateTo('dashboard')">Home</div>
+        <div class="menu-item" onclick="navigateTo('profile')">Profile</div>
+        <div class="menu-item" onclick="navigateTo('settings')">Settings</div>
+        <div class="menu-item">About</div>
+        <div class="menu-item">Help</div>
+        <div class="menu-item" style="color: red;">Logout</div>
+    </div>
+
+    <div id="dashboard" class="view active">
+        <div class="wheel-container">
+            <div style="text-align: left; font-weight: bold; margin-bottom: 10px;">GiftWheel</div>
+            <div style="position: relative;">
+                <div class="pointer"></div>
+                <div class="wheel-wrapper" id="wheel">
+                    <div class="wheel-inner"></div>
+                </div>
+            </div>
+            <p class="wheel-text">automatically Runs when button is hit</p>
+            <button class="run-btn" onclick="spinWheel()">Run Button</button>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('refer')">Refer & Earn</div>
+            <div class="tab" onclick="switchTab('leaderboard')">Leaderboard</div>
+        </div>
+
+        <div id="refer" class="tab-content active">
+            <h3>Refer & Earn</h3>
+            <p>Share your code to earn rewards!</p>
+            <div style="background:#eee; padding:10px; margin-top:10px; text-align:center; font-family:monospace;">CODE123</div>
+        </div>
+        <div id="leaderboard" class="tab-content">
+            <h3>Leaderboard</h3>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>User A - 500pts</li>
+                <li>User B - 450pts</li>
+                <li>User C - 300pts</li>
+            </ol>
+        </div>
+    </div>
+
+    <div id="profile" class="view">
+        <div class="back-nav" onclick="navigateTo('dashboard')">← Profile</div>
+        
+        <div class="profile-img-container">
+            <img src="https://via.placeholder.com/100" alt="Avatar" class="profile-img">
+            <div class="edit-badge">✎</div>
+        </div>
+
+        <div class="input-group">
+            <label>Name :-</label>
+            <div class="input-wrapper">
+                <input type="text" value="John Doe">
+                <span class="edit-icon">Edit Icon</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Email</label>
+            <div class="input-wrapper">
+                <input type="email" value="john@example.com">
+                <span class="edit-icon">Edit Icon</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Phone</label>
+            <div class="input-wrapper">
+                <input type="tel" value="+1 234 567 890">
+                <span class="edit-icon">Edit Icon</span>
+            </div>
+        </div>
+
+        <div class="unique-id">
+            <div>uniqueId</div>
+            <div style="font-weight: bold; letter-spacing: 2px;">XXXXXXX</div>
+        </div>
+    </div>
+
+    <div id="settings" class="view">
+        <div class="back-nav" onclick="navigateTo('dashboard')">← Settings</div>
+        
+        <div class="settings-btn" onclick="openModal()">
+            <span>Change Current Password</span>
+            <span>></span>
+        </div>
+
+        <div class="success-msg" id="successMsg">
+            New Password saved successfully.
+        </div>
+
+        <div class="settings-btn logout-btn">
+            Logout
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="passwordModal">
+        <div class="modal">
+            <div class="close-modal" onclick="closeModal()">x</div>
+            <h3>Change Password</h3>
+            <input type="password" placeholder="Current Password">
+            <input type="password" placeholder="New Password">
+            <input type="password" placeholder="Verify new password">
+            
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-save" onclick="savePassword()">Save</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // --- NAVIGATION LOGIC ---
+    function toggleMenu() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+    }
+
+    function navigateTo(viewId) {
+        // Hide all views
+        document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+        // Show target view
+        document.getElementById(viewId).classList.add('active');
+        
+        // Update Header Title logic
+        const titles = {
+            'dashboard': 'Home',
+            'profile': 'Profile',
+            'settings': 'Settings'
+        };
+        document.getElementById('page-title').innerText = titles[viewId];
+
+        // Close menu if open
+        const sidebar = document.getElementById('sidebar');
+        if (sidebar.classList.contains('active')) {
+            toggleMenu();
+        }
+
+        // Hide success message when navigating away/back
+        document.getElementById('successMsg').style.display = 'none';
+    }
+
+    // --- DASHBOARD LOGIC ---
+    let rotation = 0;
+    function spinWheel() {
+        const wheel = document.getElementById('wheel');
+        // Random spin between 720deg (2 spins) and 1440deg (4 spins)
+        const spin = Math.floor(Math.random() * 720) + 720;
+        rotation += spin;
+        wheel.style.transform = `rotate(${rotation}deg)`;
+    }
+
+    function switchTab(tabName) {
+        // Handle Tab Styling
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Handle Content Showing
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.getElementById(tabName).classList.add('active');
+    }
+
+    // --- SETTINGS MODAL LOGIC ---
+    function openModal() {
+        document.getElementById('passwordModal').style.display = 'flex';
+        document.getElementById('successMsg').style.display = 'none';
+    }
+
+    function closeModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    function savePassword() {
+        // 1. Close Modal
+        closeModal();
+        // 2. Show Success Message (as per Image 4)
+        const msg = document.getElementById('successMsg');
+        msg.style.display = 'block';
+        // Optional: clear inputs
+        document.querySelectorAll('.modal input').forEach(i => i.value = '');
+    }
+</script>
+
+</body>
+</html>
