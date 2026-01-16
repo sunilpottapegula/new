@@ -75,14 +75,31 @@
             border-radius: 40px;
         }
 
-        header {
+        /*header {
             background: var(--bg-card);
             padding: 20px 24px;
             border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between; /* Space for the cross icon */
-        }
+        } */
+   /* UPDATED HEADER STYLES */
+header {
+    /* Transitions from a soft Moss Green to an Earthy Brown, ending in a Muted Terracotta Red */
+    background: linear-gradient(135deg, #dcfce7 0%, #f5f0e8 50%, #fee2e2 100%);
+    padding: 20px 24px;
+    border-bottom: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+}
+
+/* Dark Theme variant using Forest Green, Deep Coffee, and Maroon */
+[data-theme="dark"] header {
+    background: linear-gradient(135deg, #064e3b 0%, #2d241e 50%, #450a0a 100%);
+    border-bottom: 2px solid #475569;
+}
+    
 
         .header-left { display: flex; align-items: center; gap: 15px; }
         header h2 { font-size: 1.25rem; color: var(--text-dark); }
