@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIFT APP - Glassmorphism Prototype</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            --backdrop-blur: blur(12px);
+            --text-color: #ffffff;
+            --accent-color: #ff4757; /* Red for heart/active states */
+            --app-max-width: 1000px;
+            --mobile-max-width: 400px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            /* Colorful background to emphasize the glass effect */
+            background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%), 
+                        linear-gradient(to bottom right, #4facfe 0%, #00f2fe 100%);
+            background-blend-mode: overlay;
+            background-attachment: fixed;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: var(--text-color);
+        }
+
+        /* --- Reusable Glass Class --- */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: var(--backdrop-blur);
+            -webkit-backdrop-filter: var(--backdrop-blur);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+        }
+
+        /* --- View Toggle Switch (Top of page) --- */
+        .view-toggle-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            z-index: 100;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255,255,255,0.3);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px; width: 26px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--accent-color); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* --- Main App Container --- */
+        #app-container {
+            width: 100%;
+            max-width: var(--app-max-width);
+            height: 80vh;
+            position: relative;
+            overflow: hidden; /* Important for containing sidebars */
+            transition: all 0.3s ease;
+        }
+
+        /* --- Common Elements --- */
+        .material-icons-round { vertical-align: middle; }
+        button { cursor: pointer; border: none; color: white; }
+        .logo { font-weight: bold; font-size: 1.2rem; }
+
+        /* =========================================
+           WEB VIEW STYLES
+        ========================================= */
+        .web-view {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Web Header */
+        .web-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Web Horizontal Nav */
+        .web-nav-bar {
+            display: flex;
+            justify-content: space-around;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .web-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .web-nav-item:hover, .web-nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Web Main Content (Dynamic Page View) */
+        .web-content {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Web Sidebar Popup */
+        .sidebar-menu {
+            position: absolute;
+            top: 70px; /* Below header */
+            right: -250px; /* Hidden initially */
+            width: 220px;
+            padding: 20px;
+            transition: right 0.3s ease-in-out;
+            z-index: 50;
+        }
+        .sidebar-menu.active {
+            right: 20px;
+        }
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            transition: background 0.2s;
+        }
+        .menu-item:hover { background: rgba(255,255,255,0.1); }
+
+        /* =========================================
+           MOBILE VIEW STYLES
+        ========================================= */
+        .mobile-view {
+            height: 100%;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        /* Mobile Main Content Area */
+        .mobile-content {
+            flex-grow: 1;
+            padding: 0 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        /* Heart Section */
+        .heart-section {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+        }
+        .heart-anim-container {
+            margin-right: 20px;
+        }
+        .heart-icon-anim {
+            font-size: 60px;
+            color: var(--accent-color);
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .heart-stats h3 { margin-bottom: 5px; }
+        .heart-stats p { font-size: 0.9rem; opacity: 0.8; }
+
+        /* Run Button & Totals */
+        .action-section {
+            padding: 20px;
+            text-align: center;
+        }
+        .run-btn {
+            background: var(--accent-color);
+            padding: 10px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        }
+        .total-beats {
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .recent-beats {
+            padding: 15px;
+            flex-grow: 1;
+        }
+
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            margin-top: auto; /* Push to bottom */
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+        }
+        .mobile-nav-item.active {
+            color: var(--text-color);
+        }
+        .mobile-nav-item .material-icons-round {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* Mobile Sidebar (Drawer style) */
+        .mobile-drawer {
+            position: absolute;
+            top: 0;
+            left: -280px; /* Hidden left */
+            width: 260px;
+            height: 100%;
+            z-index: 60;
+            padding: 20px;
+            transition: left 0.3s ease;
+            border-radius: 16px 0 0 16px;
+        }
+        .mobile-drawer.active { left: 0; }
+        .drawer-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 55;
+            display: none;
+        }
+        .drawer-overlay.active { display: block; }
+
+
+        /* =========================================
+           STATE TOGGLING (Controlled by JS class)
+        ========================================= */
+        /* When body has 'mobile-mode' class */
+        body.mobile-mode #app-container {
+            max-width: var(--mobile-max-width);
+            height: 90vh; /* Taller for mobile view */
+        }
+        body.mobile-mode .web-view { display: none; }
+        body.mobile-mode .mobile-view { display: flex; }
+
+    </style>
+</head>
+<body>
+
+    <div class="view-toggle-container glass">
+        <span>Web View</span>
+        <label class="switch">
+            <input type="checkbox" id="viewToggle">
+            <span class="slider"></span>
+        </label>
+        <span>Mobile View</span>
+    </div>
+
+
+    <div id="app-container" class="glass">
+
+        <div class="web-view">
+            <div class="web-header glass" style="border-radius: 16px 16px 0 0; margin:0;">
+                <div class="logo">GIFT APP</div>
+                <button class="glass" onclick="toggleWebSidebar()" style="padding: 5px;"><span class="material-icons-round">menu</span></button>
+            </div>
+
+            <div class="web-nav-bar glass" style="border-radius: 0; margin: 0; border-top: none;">
+                <div class="web-nav-item active">
+                    <span class="material-icons-round">handyman</span> Miner
+                </div>
+                <div class="web-nav-item">
+                    <span class="material-icons-round">stars</span> Gift Wheel
+                </div>
+                <div class="web-nav-item">
+                    <span class="material-icons-round">account_balance_wallet</span> Wallet
+                </div>
+                 <div class="web-nav-item">
+                    <span class="material-icons-round">shopping_cart</span> Purchase
+                </div>
+                 <div class="web-nav-item">
+                    <span class="material-icons-round">person</span> Profile
+                </div>
+            </div>
+
+            <div class="web-content glass" style="margin: 15px; border-radius: 12px;">
+                Dynamic page view Area
+            </div>
+
+            <div class="sidebar-menu glass" id="webSidebar">
+                <div class="menu-item"><span class="material-icons-round">person</span> Profile</div>
+                <div class="menu-item"><span class="material-icons-round">account_balance_wallet</span> Wallet</div>
+                <div class="menu-item"><span class="material-icons-round">group_add</span> Refer & Earn</div>
+                <div class="menu-item"><span class="material-icons-round">shopping_cart</span> Purchase</div>
+                 <hr style="border-color: var(--glass-border); margin: 10px 0;">
+                <div class="menu-item"><span class="material-icons-round">help</span> Help & Support</div>
+                <div class="menu-item"><span class="material-icons-round">logout</span> Logout</div>
+            </div>
+        </div>
+
+
+        <div class="mobile-view">
+            <div class="drawer-overlay" id="mobileOverlay" onclick="closeMobileDrawer()"></div>
+            
+            <div class="mobile-drawer glass" id="mobileDrawer" style="border-radius: 0;">
+                 <div class="logo" style="margin-bottom: 20px;">GIFT Menu</div>
+                 <div class="menu-item"><span class="material-icons-round">person</span> Profile</div>
+                <div class="menu-item"><span class="material-icons-round">account_balance_wallet</span> Wallet</div>
+                 <div class="menu-item" onclick="closeMobileDrawer()" style="margin-top: auto;"><span class="material-icons-round">close</span> Close Menu</div>
+            </div>
+
+            <div class="mobile-header glass" style="border-radius: 16px 16px 0 0; margin: 0;">
+                <button class="glass" style="padding: 5px;" onclick="openMobileDrawer()"><span class="material-icons-round">menu</span></button>
+                <div class="logo">GIFT APP</div>
+                <div style="width: 34px;"></div> </div>
+
+            <div class="mobile-content" style="padding-top: 15px;">
+                <div class="heart-section glass">
+                    <div class="heart-anim-container">
+                        <span class="material-icons-round heart-icon-anim">favorite</span>
+                    </div>
+                    <div class="heart-stats">
+                        <h3>Heartbeat HB-2 Beats</h3>
+                        <p>Today Heart Beats = 100 counting</p>
+                        <small>Real Heart Sound enabled</small>
+                    </div>
+                </div>
+
+                <div class="action-section glass">
+                    <button class="run-btn">Run</button>
+                    <p>Start tracking</p>
+                </div>
+
+                 <div class="total-beats glass">
+                    Total Heart of heart = 300 Beats
+                </div>
+
+                 <div class="recent-beats glass">
+                    Recent Beats: Today's Record...
+                </div>
+            </div>
+
+            <div class="mobile-bottom-nav glass" style="border-radius: 0 0 16px 16px; margin: 0;">
+                <div class="mobile-nav-item active">
+                    <span class="material-icons-round">handyman</span> Miner
+                </div>
+                 <div class="mobile-nav-item">
+                    <span class="material-icons-round">group_add</span> Refer
+                </div>
+                 <div class="mobile-nav-item">
+                    <span class="material-icons-round">account_balance_wallet</span> Wallet
+                </div>
+                 <div class="mobile-nav-item">
+                    <span class="material-icons-round">shopping_cart</span> Shop
+                </div>
+                 <div class="mobile-nav-item">
+                    <span class="material-icons-round">person</span> Profile
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        // --- View Toggle Logic ---
+        const viewToggle = document.getElementById('viewToggle');
+        const body = document.body;
+
+        viewToggle.addEventListener('change', function() {
+            if(this.checked) {
+                body.classList.add('mobile-mode');
+            } else {
+                body.classList.remove('mobile-mode');
+            }
+        });
+
+        // --- Web Sidebar Logic ---
+        function toggleWebSidebar() {
+            document.getElementById('webSidebar').classList.toggle('active');
+        }
+
+        // --- Mobile Drawer Logic ---
+        function openMobileDrawer() {
+            document.getElementById('mobileDrawer').classList.add('active');
+            document.getElementById('mobileOverlay').classList.add('active');
+        }
+
+        function closeMobileDrawer() {
+            document.getElementById('mobileDrawer').classList.remove('active');
+            document.getElementById('mobileOverlay').classList.remove('active');
+        }
+
+        // --- Simple Nav Interaction (Visual only for prototype) ---
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+        mobileNavItems.forEach(item => {
+            item.addEventListener('click', function(){
+                document.querySelector('.mobile-nav-item.active').classList.remove('active');
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
