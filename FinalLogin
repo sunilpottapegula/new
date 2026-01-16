@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sajag Coin | Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --primary: #4285f4;
+            --secondary: #34a853;
+            --dark: #1a1a1a;
+            --bg-web: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --reg-gradient: linear-gradient(90deg, #2e7d32 0%, #795548 50%, #c62828 100%);
+            --error-red: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { min-height: 100vh; background: #f0f2f5; overflow-x: hidden; }
+
+        /* --- VIEW SWITCHER --- */
+        .view-switcher {
+            position: fixed; top: 20px; left: 20px; z-index: 10000;
+            background: white; padding: 10px 20px; border-radius: 50px;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid var(--primary);
+        }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        /* --- LAYOUT --- */
+        #webViewWrapper { display: flex; height: 100vh; width: 100%; }
+        .web-left { width: 60%; background: var(--bg-web); color: white; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; }
+        .web-slide { position: absolute; opacity: 0; transition: 1s; padding: 40px; }
+        .web-slide.active { opacity: 1; }
+        .web-right { width: 40%; background: white; display: flex; align-items: center; justify-content: center; }
+        
+        .web-container { 
+            width: 100%; 
+            max-width: 400px; 
+            padding: 40px; 
+            display: flex; 
+            flex-direction: column; 
+            /* Added padding bottom to web container */
+            padding-bottom: 60px; 
+        }
+
+        /* --- FORMS --- */
+        .form-group { width: 100%; margin-bottom: 20px; position: relative; }
+        label { display: block; font-weight: 600; font-size: 14px; margin-bottom: 8px; color: var(--dark); }
+        input, .btn { width: 100%; display: block; border-radius: 10px; font-size: 15px; transition: 0.3s; }
+        input { padding: 14px 15px; border: 2px solid #eee; outline: none; }
+        input:focus { border-color: var(--primary); }
+        .btn { padding: 14px; border: none; font-weight: 600; cursor: pointer; margin-bottom: 12px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .or-divider { text-align: center; color: #aaa; margin: 20px 0; font-size: 12px; font-weight: 700; }
+
+        /* Added specific class for Google spacing */
+        .google-btn-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* --- MODAL (REGISTRATION) --- */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 11000; padding: 20px; }
+        .modal-content { background: white; border-radius: 20px; width: 100%; max-width: 450px; position: relative; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        .modal-header { padding: 20px 25px; background: var(--reg-gradient); color: white; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { font-size: 20px; font-weight: 600; margin: 0; letter-spacing: 0.5px; }
+        .close-modal { cursor: pointer; font-size: 32px; line-height: 1; font-weight: 300; transition: transform 0.2s; }
+        .close-modal:hover { transform: scale(1.2); }
+        .modal-body { padding: 30px; }
+        .input-row { display: flex; align-items: center; gap: 10px; width: 100%; }
+        .info-icon { cursor: pointer; color: var(--primary); font-weight: bold; border: 1.5px solid var(--primary); border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .info-box { display: none; background: #f8f9fa; border: 1px solid var(--primary); padding: 12px; border-radius: 8px; font-size: 13px; color: #444; margin-top: 8px; }
+        .error-msg { color: var(--error-red); font-size: 12px; margin-top: 5px; min-height: 18px; font-weight: 500; }
+
+        /* --- MOBILE VIEW --- */
+        #mobileViewWrapper { display: none; min-height: 100vh; background: #222; padding: 40px 20px; justify-content: center; align-items: center; }
+        .phone-frame { width: 375px; height: 750px; background: white; border: 12px solid #111; border-radius: 40px; overflow-y: auto; position: relative; }
+        .mobile-header { background: var(--bg-web); color: white; padding: 50px 20px; text-align: center; font-weight: bold; }
+        .mobile-body { padding: 25px; padding-bottom: 50px; display: flex; flex-direction: column; }
+
+        @media (max-width: 500px) {
+            .view-switcher { display: none; }
+            #webViewWrapper { display: none !important; }
+            #mobileViewWrapper { display: flex !important; padding: 0; }
+            .phone-frame { width: 100%; height: 100vh; border: none; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="view-switcher">
+        <span style="font-size:12px">🌐 Web</span>
+        <label class="switch">
+            <input type="checkbox" id="viewToggle" onchange="toggleView()">
+            <span class="slider"></span>
+        </label>
+        <span style="font-size:12px">📱 Mobile</span>
+    </div>
+
+    <div id="webViewWrapper">
+        <div class="web-left">
+            <div class="web-slide active"><h1>🔒 Secure Digital Wallet</h1><p>Enterprise-grade security</p></div>
+            <div class="web-slide"><h1>⚡ Lightning Fast</h1><p>Transactions in seconds</p></div>
+            <div class="web-slide"><h1>💎 Total Control</h1><p>Your keys, your coins</p></div>
+        </div>
+        <div class="web-right">
+            <div class="web-container">
+                <h1 style="color:var(--primary); margin-bottom:10px; text-align:center;">Sajag Coin</h1>
+                <p style="text-align:center; color:#666; margin-bottom:30px;">Sign in to your account</p>
+                
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="webEmail" placeholder="example@gmail.com">
+                </div>
+                
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="webPass" placeholder="Enter password">
+                </div>
+
+                <div id="webMainError" class="error-msg" style="text-align:center;"></div>
+                
+                <button class="btn btn-primary" onclick="handleLogin('web')">Sign In</button>
+                <button class="btn btn-secondary" onclick="openSignup()">Create New Account</button>
+                
+                <div class="or-divider">OR</div>
+                
+                <div class="google-btn-container">
+                    <div id="g_id_onload" data-client_id="YOUR_ID" data-callback="handleGoogle"></div>
+                    <div class="g_id_signin" data-size="large" data-width="320"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobileViewWrapper">
+        <div class="phone-frame">
+            <div class="mobile-header" id="mobileSlideText">🔒 Secure Digital Wallet</div>
+            <div class="mobile-body">
+                <h3 style="margin-bottom:20px; color: var(--dark);">Welcome Back</h3>
+                <div class="form-group"><input type="email" id="mobileEmail" placeholder="Email"></div>
+                <div class="form-group"><input type="password" id="mobilePass" placeholder="Password"></div>
+                <div id="mobileMainError" class="error-msg" style="text-align:center;"></div>
+                <button class="btn btn-primary" onclick="handleLogin('mobile')">Sign In</button>
+                <button class="btn btn-secondary" onclick="openSignup()" style="background:#6c757d">Create Account</button>
+                <div class="or-divider">OR</div>
+                <div class="google-btn-container">
+                    <div class="g_id_signin" data-size="large" data-width="290"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Register</h3>
+                <span class="close-modal" onclick="closeSignup()">×</span>
+            </div>
+            
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Gmail Address</label>
+                    <div class="input-row">
+                        <input type="email" id="regEmail" placeholder="Enter Gmail">
+                        <span class="info-icon" onclick="toggleInfo('infoEmail')">i</span>
+                    </div>
+                    <div id="infoEmail" class="info-box">Must be a valid @gmail.com address.</div>
+                    <span id="errRegEmail" class="error-msg"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-row">
+                        <input type="password" id="regPass" placeholder="Set Password">
+                        <span class="info-icon" onclick="toggleInfo('infoPass')">i</span>
+                    </div>
+                    <div id="infoPass" class="info-box">8+ characters, Letter, Number, and Symbol.</div>
+                    <span id="errRegPass" class="error-msg"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="input-row">
+                        <input type="password" id="regConfirmPass" placeholder="Confirm">
+                        <span class="info-icon" onclick="toggleInfo('infoConf')">i</span>
+                    </div>
+                    <div id="infoConf" class="info-box">Must match the password above.</div>
+                    <span id="errRegConf" class="error-msg"></span>
+                </div>
+
+                <button class="btn btn-primary" onclick="handleRegister()">Complete Registration</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleView() {
+            const isMobile = document.getElementById('viewToggle').checked;
+            document.getElementById('webViewWrapper').style.display = isMobile ? 'none' : 'flex';
+            document.getElementById('mobileViewWrapper').style.display = isMobile ? 'flex' : 'none';
+            document.body.style.background = isMobile ? "#222" : "#f0f2f5";
+        }
+
+        function toggleInfo(id) {
+            const box = document.getElementById(id);
+            const isVisible = box.style.display === 'block';
+            document.querySelectorAll('.info-box').forEach(b => b.style.display = 'none');
+            box.style.display = isVisible ? 'none' : 'block';
+        }
+
+        let sIdx = 0;
+        const wSlides = document.querySelectorAll('.web-slide');
+        setInterval(() => {
+            wSlides[sIdx].classList.remove('active');
+            sIdx = (sIdx + 1) % wSlides.length;
+            wSlides[sIdx].classList.add('active');
+            const mobileText = document.getElementById('mobileSlideText');
+            const mTexts = ["🔒 Secure Digital Wallet", "⚡ Lightning Fast", "💎 Total Control"];
+            if(mobileText) mobileText.innerText = mTexts[sIdx % mTexts.length];
+        }, 3000);
+
+        function openSignup() { 
+            document.getElementById('regEmail').value = "";
+            document.getElementById('regPass').value = "";
+            document.getElementById('regConfirmPass').value = "";
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
+            document.querySelectorAll('.info-box').forEach(b => b.style.display = 'none');
+            document.getElementById('signupModal').style.display = 'flex'; 
+        }
+
+        function closeSignup() { 
+            document.getElementById('signupModal').style.display = 'none';
+        }
+
+        function handleLogin(type) {
+            const email = document.getElementById(type + 'Email').value;
+            const pass = document.getElementById(type + 'Pass').value;
+            const mainErr = document.getElementById(type + 'MainError');
+            if (email === "sunil@gmail.com" && pass === "Sunil@1900") {
+                alert("Welcome back!"); return;
+            }
+            mainErr.innerText = "Invalid credentials.";
+        }
+
+        function handleRegister() {
+            const email = document.getElementById('regEmail').value;
+            const pass = document.getElementById('regPass').value;
+            const conf = document.getElementById('regConfirmPass').value;
+            let isValid = true;
+
+            if (!email.endsWith("@gmail.com")) {
+                document.getElementById('errRegEmail').innerText = "Requires @gmail.com";
+                isValid = false;
+            }
+            if (pass.length < 8) {
+                document.getElementById('errRegPass').innerText = "Too short (min 8).";
+                isValid = false;
+            }
+            if (conf !== pass) {
+                document.getElementById('errRegConf').innerText = "Mismatch.";
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert("Account created successfully!");
+                closeSignup();
+            }
+        }
+
+        function handleGoogle(response) { alert("Google Auth Success!"); }
+    </script>
+</body>
+</html>
