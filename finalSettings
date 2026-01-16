@@ -39,7 +39,6 @@
             transition: background 0.5s ease;
         }
 
-        /* VIEW SWITCHER UI */
         .view-controls {
             margin-bottom: 20px;
             background: rgba(255, 255, 255, 0.1);
@@ -75,48 +74,32 @@
             border-radius: 40px;
         }
 
-        /*header {
-            background: var(--bg-card);
+        /* --- HEADER STYLES --- */
+        header {
+            background: linear-gradient(135deg, #dcfce7 0%, #f5f0e8 50%, #fee2e2 100%);
             padding: 20px 24px;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 2px solid var(--border);
             display: flex;
             align-items: center;
-            justify-content: space-between; /* Space for the cross icon */
-        } */
-   /* UPDATED HEADER STYLES */
-header {
-    /* Transitions from a soft Moss Green to an Earthy Brown, ending in a Muted Terracotta Red */
-    background: linear-gradient(135deg, #dcfce7 0%, #f5f0e8 50%, #fee2e2 100%);
-    padding: 20px 24px;
-    border-bottom: 2px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-}
-
-/* Dark Theme variant using Forest Green, Deep Coffee, and Maroon */
-[data-theme="dark"] header {
-    background: linear-gradient(135deg, #064e3b 0%, #2d241e 50%, #450a0a 100%);
-    border-bottom: 2px solid #475569;
-}
-    
-
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        header h2 { font-size: 1.25rem; color: var(--text-dark); }
-        .back-btn { cursor: pointer; font-size: 1.2rem; background: none; border: none; color: var(--text-dark); }
-        
-        /* Close Icon Style */
-        .close-btn { 
-            cursor: pointer; 
-            font-size: 1.5rem; 
-            background: none; 
-            border: none; 
-            color: var(--text-light); 
-            line-height: 1;
-            padding: 5px;
-            transition: color 0.2s, transform 0.2s;
+            justify-content: space-between;
         }
-        .close-btn:hover { color: var(--danger); transform: scale(1.1); }
+
+        [data-theme="dark"] header {
+            background: linear-gradient(135deg, #064e3b 0%, #2d241e 50%, #450a0a 100%);
+            border-bottom: 2px solid #475569;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        header h2 { font-size: 1.25rem; color: var(--text-dark); }
+        .back-btn, .close-btn { cursor: pointer; background: none; border: none; color: var(--text-dark); }
+        .back-btn { font-size: 1.2rem; }
+        .close-btn { font-size: 1.5rem; font-weight: bold; opacity: 0.6; transition: 0.2s; }
+        .close-btn:hover { opacity: 1; color: var(--danger); }
 
         .content { flex: 1; overflow-y: auto; padding: 24px; }
 
@@ -148,7 +131,7 @@ header {
         .setting-info h4 { font-size: 0.95rem; color: var(--text-dark); margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
         .setting-info p { font-size: 0.75rem; color: var(--text-light); }
 
-        /* SWITCH STYLES */
+        /* --- SWITCH STYLES --- */
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
@@ -162,23 +145,31 @@ header {
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* DANGER ZONE */
+        /* --- DANGER ZONE --- */
         .danger-zone {
             margin-top: 32px; padding: 20px; border: 1px dashed var(--danger);
             border-radius: 12px; background: rgba(239, 68, 68, 0.05);
         }
+        .danger-zone h4 { color: var(--danger); margin-bottom: 8px; }
+        
         .btn-delete {
             background-color: var(--danger); color: white; border: none;
-            padding: 10px 16px; border-radius: 8px; font-weight: 600; cursor: pointer;
+            padding: 10px 16px; border-radius: 8px; font-weight: 600;
+            cursor: pointer; transition: background 0.2s ease;
         }
+        .btn-delete:hover { background-color: var(--danger-hover); }
 
-        /* MODAL */
+        /* --- MODAL --- */
         .modal-overlay {
-            position: absolute; inset: 0; background: var(--modal-bg);
+            position: absolute; inset: 0;
+            background: var(--modal-bg);
             display: none; align-items: center; justify-content: center;
             z-index: 2000; padding: 20px;
         }
-        .modal-card { background: var(--bg-card); padding: 25px; width: 100%; max-width: 320px; border-radius: 18px; }
+        .modal-card {
+            background: var(--bg-card); padding: 25px;
+            width: 100%; max-width: 320px; border-radius: 18px;
+        }
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .btn { flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: 700; cursor: pointer; }
         .btn-cancel { background: var(--border); color: var(--text-dark); }
@@ -199,10 +190,10 @@ header {
     <div class="app-container" id="appFrame">
         <header>
             <div class="header-left">
-                <button class="back-btn" onclick="alert('Back to Dashboard')">←</button>
+                <button class="back-btn" onclick="alert('Back')">←</button>
                 <h2 id="title-text">Settings</h2>
             </div>
-            <button class="close-btn" onclick="closeSettings()" title="Close Settings">×</button>
+            <button class="close-btn" onclick="alert('Closed')">✕</button>
         </header>
 
         <div class="content">
@@ -251,6 +242,10 @@ header {
                     <select id="langDropdown" style="padding: 8px; border-radius: 8px; background: var(--bg-canvas); color: var(--text-dark); border: 1px solid var(--border);" onchange="updateLang(this.value)">
                         <option value="en">English</option>
                         <option value="hi">हिन्दी (Hindi)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
                         <option value="es">Español</option>
                     </select>
                 </div>
@@ -259,8 +254,8 @@ header {
 
             <div class="danger-zone">
                 <h4 id="label-danger">Danger Zone</h4>
-                <p style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 12px;">Actions performed here cannot be undone.</p>
-                <button class="btn-delete" onclick="confirmDelete()">Delete Account</button>
+                <p id="sub-danger" style="font-size: 0.75rem; color: var(--text-light); margin-bottom: 12px;">Actions performed here cannot be undone.</p>
+                <button class="btn-delete" id="btn-delete-text" onclick="confirmDelete()">Delete Account</button>
             </div>
         </div>
 
@@ -281,13 +276,6 @@ header {
     </div>
 
     <script>
-        function closeSettings() {
-            if(confirm("Exit settings? Unsaved changes may be lost.")) {
-                document.getElementById('appFrame').style.opacity = '0';
-                setTimeout(() => alert("Settings Window Closed"), 300);
-            }
-        }
-
         function toggleView() {
             const frame = document.getElementById('appFrame');
             const isMobile = document.getElementById('viewToggle').checked;
@@ -311,19 +299,23 @@ header {
         }
 
         function confirmDelete() {
-            if(confirm("Are you absolutely sure?")) {
-                alert("Account deletion process started.");
-            }
+            if(confirm("Are you sure?")) { alert("Deleted."); }
         }
 
+        /* --- ALL LANGUAGES TRANSLATIONS --- */
         const translations = {
-            en: { title: "Settings", dark: "🌙 Dark Mode", pass: "🔒 Change Password", privacy: "🛡️ Private Profile", notif: "🔔 Notifications", lang: "Language", danger: "Danger Zone" },
-            hi: { title: "सेटिंग्स", dark: "🌙 डार्क मोड", pass: "🔒 पासवर्ड बदलें", privacy: "🛡️ निजी प्रोफ़ाइल", notif: "🔔 सूचनाएं", lang: "भाषा", danger: "खतरनाक क्षेत्र" },
-            es: { title: "Ajustes", dark: "🌙 Modo Oscuro", pass: "🔒 Cambiar Contraseña", privacy: "🛡️ Perfil Privado", notif: "🔔 Notificaciones", lang: "Idioma", danger: "Zona de Peligro" }
+            en: { title: "Settings", dark: "🌙 Dark Mode", pass: "🔒 Change Password", privacy: "🛡️ Private Profile", notif: "🔔 Notifications", lang: "Language", danger: "Danger Zone", del: "Delete Account" },
+            hi: { title: "सेटिंग्स", dark: "🌙 डार्क मोड", pass: "🔒 पासवर्ड बदलें", privacy: "🛡️ निजी प्रोफ़ाइल", notif: "🔔 सूचनाएं", lang: "भाषा", danger: "खतरनाक क्षेत्र", del: "खाता हटाएं" },
+            te: { title: "సెట్టింగులు", dark: "🌙 డార్క్ మోడ్", pass: "🔒 పాస్‌వర్డ్ మార్చు", privacy: "🛡️ ప్రైవేట్ ప్రొఫైల్", notif: "🔔 నోటిఫికేషన్లు", lang: "భాష", danger: "ప్రమాద ప్రాంతం", del: "ఖాతాను తొలగించండి" },
+            ta: { title: "அமைப்புகள்", dark: "🌙 இருண்ட பயன்முறை", pass: "🔒 கடவுச்சொல்லை மாற்று", privacy: "🛡️ தனிப்பட்ட சுயவிவரம்", notif: "🔔 அறிவிப்புகள்", lang: "மொழி", danger: "அபாய பகுதி", del: "கணக்கை நீக்கு" },
+            kn: { title: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು", dark: "🌙 ಡಾರ್ಕ್ ಮೋಡ್", pass: "🔒 ಪಾಸ್‌ವರ್ಡ್ ಬದಲಾಯಿಸಿ", privacy: "🛡️ ಖಾಸಗಿ ಪ್ರೊಫೈಲ್", notif: "🔔 ಅಧಿಸೂಚನೆಗಳು", lang: "ಭಾಷೆ", danger: "ಅಪಾಯದ ವಲಯ", del: "ಖಾತೆಯನ್ನು ಅಳಿಸಿ" },
+            ml: { title: "ക്രമീകരണങ്ങൾ", dark: "🌙 ഡാർക്ക് മോഡ്", pass: "🔒 പാസ്‌വേഡ് മാറ്റുക", privacy: "🛡️ സ്വകാര്യ പ്രൊഫൈൽ", notif: "🔔 അറിയിപ്പുകൾ", lang: "ഭാഷ", danger: "അപകട മേഖല", del: "അക്കൗണ്ട് ഇല്ലാതാക്കുക" },
+            es: { title: "Ajustes", dark: "🌙 Modo Oscuro", pass: "🔒 Cambiar Contraseña", privacy: "🛡️ Perfil Privado", notif: "🔔 Notificaciones", lang: "Idioma", danger: "Zona de Peligro", del: "Eliminar cuenta" }
         };
 
         function updateLang(code) {
             const t = translations[code] || translations['en'];
+            
             document.getElementById('title-text').innerText = t.title;
             document.getElementById('label-dark').innerText = t.dark;
             document.getElementById('label-pass').innerText = t.pass;
@@ -331,6 +323,8 @@ header {
             document.getElementById('label-notif').innerText = t.notif;
             document.getElementById('label-lang').innerText = t.lang;
             document.getElementById('label-danger').innerText = t.danger;
+            document.getElementById('btn-delete-text').innerText = t.del;
+            document.getElementById('modal-title').innerText = t.pass;
         }
     </script>
 </body>
