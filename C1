@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gift App Pro - Web & Mobile</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --bg-canvas: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-dark: #111827;
+            --text-light: #6b7280;
+            --border: #d1d5db;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+        
+        body { 
+            background-color: #374151; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* --- TOGGLE CONTROLLER --- */
+        .view-switcher {
+            margin-bottom: 20px;
+            background: #1f2937;
+            padding: 10px;
+            border-radius: 50px;
+            display: flex;
+            gap: 10px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .view-switcher button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+            background: transparent;
+            color: #9ca3af;
+        }
+
+        .view-switcher button.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        #device-frame {
+            background: var(--bg-canvas);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* WEBSITE VIEW MODE */
+        #device-frame.web-view {
+            width: 1000px;
+            height: 700px;
+            border-radius: 12px;
+        }
+
+        /* MOBILE VIEW MODE */
+        #device-frame.mobile-view {
+            width: 375px;
+            height: 667px;
+            border-radius: 40px;
+            border: 8px solid #111827;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: var(--bg-card);
+            padding: 0 24px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; color: var(--text-dark); letter-spacing: -0.5px; }
+
+        .menu-trigger {
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .menu-trigger span { width: 24px; height: 3px; background: var(--text-dark); border-radius: 2px; }
+
+        /* --- SIDEBAR / DROPDOWN MENU --- */
+        .nav-menu {
+            position: absolute;
+            top: 70px;
+            right: -250px;
+            width: 240px;
+            height: calc(100% - 70px);
+            background: var(--bg-card);
+            border-left: 1px solid var(--border);
+            transition: 0.3s;
+            z-index: 90;
+            padding: 20px;
+        }
+        .nav-menu.open { right: 0; }
+        .nav-menu ul { list-style: none; }
+        .nav-menu li {
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-light);
+            font-weight: 500;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .nav-menu li:hover { background: #f3f4f6; color: var(--primary); }
+
+        /* --- MAIN CONTENT AREA --- */
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+
+        /* --- WHEEL SECTION (DASHBOARD) --- */
+        .hero-section {
+            display: flex;
+            gap: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .web-view .hero-section { flex-direction: row; align-items: center; }
+        .mobile-view .hero-section { flex-direction: column; }
+
+        .wheel-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel {
+            width: 180px;
+            height: 180px;
+            border: 8px solid #1f2937;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                #ef4444 0deg 45deg, #f59e0b 45deg 90deg, 
+                #10b981 90deg 135deg, #3b82f6 135deg 180deg,
+                #6366f1 180deg 225deg, #8b5cf6 225deg 270deg,
+                #ec4899 270deg 315deg, #6b7280 315deg 360deg
+            );
+            transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .wheel::after {
+            content: '▼';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #1f2937;
+            font-size: 20px;
+        }
+
+        .action-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-run {
+            padding: 12px 48px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+            transition: 0.2s;
+        }
+        .btn-run:active { transform: scale(0.95); }
+
+        /* --- DYNAMIC PAGES TABS --- */
+        .dynamic-tabs {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .dynamic-view-area {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 150px;
+            border: 1px solid var(--border);
+        }
+
+        /* --- LISTS & CARDS --- */
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .list-item:last-child { border: none; }
+
+        /* --- BOTTOM NAV (Mobile Only) --- */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: 5px;
+        }
+
+        .mobile-view .bottom-nav { display: flex; }
+
+        .nav-icon-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .nav-icon-btn.active { color: var(--primary); }
+        .nav-icon-btn i { font-size: 1.4rem; margin-bottom: 4px; }
+
+        /* --- INNER PAGE CONTENT --- */
+        .page-content { display: none; animation: fadeIn 0.3s ease; }
+        .page-content.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; background: #e5e7eb; margin: 0 auto 15px; display: block; }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-light); margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
+
+        .balance-card { background: var(--primary); color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
+        .balance-card h2 { font-size: 2rem; margin: 5px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="view-switcher">
+        <button id="web-toggle" onclick="setView('web')">Website View</button>
+        <button id="mobile-toggle" class="active" onclick="setView('mobile')">Mobile View</button>
+    </div>
+
+    <div id="device-frame" class="mobile-view">
+        <header>
+            <div class="logo">GIFT APP</div>
+            <div class="menu-trigger" onclick="toggleMenu()">
+                <span></span><span></span><span></span>
+            </div>
+        </header>
+
+        <nav class="nav-menu" id="side-menu">
+            <ul>
+                <li onclick="showPage('dashboard')">🏠 Home</li>
+                <li onclick="showPage('profile')">👤 Profile</li>
+                <li onclick="showPage('wallet')">👛 Wallet</li>
+                <li onclick="showPage('settings')">⚙️ Settings</li>
+                <li onclick="alert('Support Ticket Created')">❓ Help & Support</li>
+                <li style="color: #ef4444;" onclick="location.reload()">🚪 Logout</li>
+            </ul>
+        </nav>
+
+        <main id="main-scroll">
+            
+            <section id="page-dashboard" class="page-content active">
+                <div class="hero-section">
+                    <div class="wheel-container">
+                        <div id="wheel" class="wheel"></div>
+                        <p style="font-size: 0.7rem; color: var(--text-light); margin-top: 10px;">Giftwheel</p>
+                    </div>
+                    <div class="action-container">
+                        <button class="btn-run" onclick="spinWheel()">Run.</button>
+                    </div>
+                </div>
+
+                <div class="dynamic-tabs">
+                    <button class="tab-btn active" id="btn-refer" onclick="switchDynamic('refer')">Refer & Earn</button>
+                    <button class="tab-btn" id="btn-leader" onclick="switchDynamic('leader')">Leaderboard</button>
+                </div>
+
+                <div class="dynamic-view-area">
+                    <div id="dyn-refer">
+                        <h4 style="margin-bottom: 10px;">Invite Friends</h4>
+                        <div style="background: #f9fafb; border: 2px dashed var(--border); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="color: var(--text-light); font-size: 0.8rem;">Your Code:</p>
+                            <h3 style="letter-spacing: 2px; color: var(--primary);">GIFT-7788</h3>
+                        </div>
+                    </div>
+
+                    <div id="dyn-leader" style="display: none;">
+                        <div class="list-item"><span>1. Alex Smith</span> <strong>$450</strong></div>
+                        <div class="list-item"><span>2. Maria Garcia</span> <strong>$320</strong></div>
+                        <div class="list-item"><span>3. John Doe</span> <strong>$290</strong></div>
+                    </div>
+                    
+                    <p style="font-size: 0.65rem; color: var(--text-light); margin-top: 15px; text-align: center;">Dynamic pages view</p>
+                </div>
+            </section>
+
+            <section id="page-profile" class="page-content">
+                <h3 style="margin-bottom: 20px;">My Profile</h3>
+                <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" class="profile-img">
+                <div class="input-group">
+                    <label>FULL NAME</label>
+                    <input type="text" value="Jane Cooper">
+                </div>
+                <div class="input-group">
+                    <label>EMAIL ADDRESS</label>
+                    <input type="email" value="jane.cooper@example.com">
+                </div>
+                <button class="btn-run" style="width: 100%;" onclick="showPage('dashboard')">Update Profile</button>
+            </section>
+
+            <section id="page-wallet" class="page-content">
+                <div class="balance-card">
+                    <p>Available Balance</p>
+                    <h2>$1,250.00</h2>
+                    <p style="font-size: 0.7rem; opacity: 0.8;">Last updated: Just now</p>
+                </div>
+                <h4>Recent Activity</h4>
+                <div class="list-item"><span>Gift Wheel Win</span> <span style="color:#10b981">+$5.00</span></div>
+                <div class="list-item"><span>Referral Bonus</span> <span style="color:#10b981">+$10.00</span></div>
+                <div class="list-item"><span>Withdrawal</span> <span style="color:#ef4444">-$50.00</span></div>
+            </section>
+
+            <section id="page-settings" class="page-content">
+                <h3 style="margin-bottom: 20px;">Settings</h3>
+                <div class="list-item">
+                    <span>Push Notifications</span>
+                    <input type="checkbox" checked>
+                </div>
+                <div class="list-item">
+                    <span>Dark Mode</span>
+                    <input type="checkbox">
+                </div>
+                <div class="list-item">
+                    <span>App Language</span>
+                    <span style="font-size: 0.8rem; color: var(--primary);">English ›</span>
+                </div>
+                <div class="list-item" style="margin-top: 20px; color: #ef4444;">
+                    <span>Delete Account</span>
+                </div>
+            </section>
+
+        </main>
+
+        <nav class="bottom-nav">
+            <div class="nav-icon-btn active" id="nav-home" onclick="showPage('dashboard')">
+                <i>🏠</i>
+                <span>Home Icon</span>
+            </div>
+            <div class="nav-icon-btn" id="nav-wallet" onclick="showPage('wallet')">
+                <i>👛</i>
+                <span>Wallet Icon</span>
+            </div>
+            <div class="nav-icon-btn" id="nav-profile" onclick="showPage('profile')">
+                <i>👤</i>
+                <span>Profile Icon</span>
+            </div>
+        </nav>
+    </div>
+
+    <script>
+        /* --- VIEW SWITCHER LOGIC --- */
+        function setView(mode) {
+            const frame = document.getElementById('device-frame');
+            const webBtn = document.getElementById('web-toggle');
+            const mobBtn = document.getElementById('mobile-toggle');
+
+            if (mode === 'web') {
+                frame.className = 'web-view';
+                webBtn.classList.add('active');
+                mobBtn.classList.remove('active');
+            } else {
+                frame.className = 'mobile-view';
+                mobBtn.classList.add('active');
+                webBtn.classList.remove('active');
+            }
+        }
+
+        /* --- NAVIGATION LOGIC --- */
+        function toggleMenu() {
+            document.getElementById('side-menu').classList.toggle('open');
+        }
+
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            // Show target page
+            document.getElementById('page-' + pageId).classList.add('active');
+            // Close menu
+            document.getElementById('side-menu').classList.remove('open');
+            // Update bottom nav status
+            updateBottomNav(pageId);
+            // Scroll to top
+            document.getElementById('main-scroll').scrollTop = 0;
+        }
+
+        function updateBottomNav(id) {
+            document.querySelectorAll('.nav-icon-btn').forEach(b => b.classList.remove('active'));
+            if (id === 'dashboard') document.getElementById('nav-home').classList.add('active');
+            if (id === 'wallet') document.getElementById('nav-wallet').classList.add('active');
+            if (id === 'profile') document.getElementById('nav-profile').classList.add('active');
+        }
+
+        /* --- DYNAMIC TABS LOGIC --- */
+        function switchDynamic(tab) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + tab).classList.add('active');
+
+            if (tab === 'refer') {
+                document.getElementById('dyn-refer').style.display = 'block';
+                document.getElementById('dyn-leader').style.display = 'none';
+            } else {
+                document.getElementById('dyn-refer').style.display = 'none';
+                document.getElementById('dyn-leader').style.display = 'block';
+            }
+        }
+
+        /* --- GAME LOGIC --- */
+        let rotation = 0;
+        function spinWheel() {
+            const wheel = document.getElementById('wheel');
+            const extraDeg = Math.floor(Math.random() * 360) + 720; // At least 2 full spins
+            rotation += extraDeg;
+            wheel.style.transform = `rotate(${rotation}deg)`;
+        }
+    </script>
+</body>
+</html>
