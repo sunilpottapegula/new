@@ -83,5 +83,3 @@ export class Home {
     this.currentPageIcon = iconMap[page] || 'auto_awesome';
   }
 }
-
-
