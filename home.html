@@ -1,0 +1,89 @@
+<div class="controls-wrapper" [class.mobile-mode]="isMobileMode">
+<div class="toggle-card glass-panel">
+  <span class="material-icons-round">devices</span>
+  <span>Mobile View</span>
+  <label class="switch">
+    <input type="checkbox" (change)="toggleMobileMode()">
+    <span class="slider"></span>
+  </label>
+</div>
+
+<div class="toggle-card glass-panel">
+  <span class="material-icons-round">dark_mode</span>
+  <span>Light Mode</span>
+  <label class="switch">
+    <input type="checkbox" (change)="toggleTheme()">
+    <span class="slider"></span>
+  </label>
+</div>
+</div>
+
+<div id="app-container" class="glass-panel" [class.mobile-frame]="isMobileMode">
+<div class="drawer-overlay" [class.active]="isDrawerOpen" (click)="toggleMenu()"></div>
+<div class="right-drawer" [class.active]="isDrawerOpen">
+  <div class="drawer-header">
+    <h3 class="brand-text">GIFT PRO</h3>
+    <span class="material-icons-round" (click)="toggleMenu()">close</span>
+  </div>
+  <div class="drawer-links">
+    <div class="nav-link" (click)="navigateTo('Profile')"><span class="material-icons-round">person</span> Profile</div>
+    <div class="nav-link" (click)="navigateTo('Wallet')"><span class="material-icons-round">wallet</span> Wallet</div>
+    <div class="nav-link" (click)="navigateTo('Settings')"><span class="material-icons-round">settings</span> Settings</div>
+    <hr class="divider">
+    <div class="nav-link logout-link" (click)="navigateTo('Logout')"><span class="material-icons-round">logout</span> Logout</div>
+  </div>
+</div>
+
+<div class="app-content-wrapper">
+  <header>
+    <h2 class="logo">GIFT APP</h2>
+    <div class="icon-circle" (click)="toggleMenu()">
+      <span class="material-icons-round">menu</span>
+    </div>
+  </header>
+
+  <nav class="web-nav" *ngIf="!isMobileMode">
+    <div class="nav-link" [class.active]="activePage === 'Dashboard'" (click)="navigateTo('Dashboard')">
+      <span class="material-icons-round">grid_view</span> Dashboard
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Gift Wheel'" (click)="navigateTo('Gift Wheel')">
+      <span class="material-icons-round">auto_awesome</span> Gift Wheel
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Earnings'" (click)="navigateTo('Earnings')">
+      <span class="material-icons-round">payments</span> Earnings
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Marketplace'" (click)="navigateTo('Marketplace')">
+      <span class="material-icons-round">storefront</span> Marketplace
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <div *ngIf="activePage === 'Dashboard'" class="page-view">
+      <span class="material-icons-round placeholder-icon">space_dashboard</span>
+      <h1>Welcome Back</h1>
+      <p>Your gifts and earnings are updated for today.</p>
+    </div>
+
+    <div *ngIf="activePage !== 'Dashboard'" class="page-view">
+      <span class="material-icons-round placeholder-icon">{{ currentPageIcon }}</span>
+      <h2>{{ activePage }}</h2>
+      <p>This feature is currently being polished.</p>
+    </div>
+  </div>
+
+  <nav class="mobile-bottom-nav" *ngIf="isMobileMode">
+    <div class="nav-link" [class.active]="activePage === 'Dashboard'" (click)="navigateTo('Dashboard')">
+      <span class="material-icons-round">grid_view</span>
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Gift Wheel'" (click)="navigateTo('Gift Wheel')">
+      <span class="material-icons-round">auto_awesome</span>
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Marketplace'" (click)="navigateTo('Marketplace')">
+      <span class="material-icons-round">storefront</span>
+    </div>
+    <div class="nav-link" [class.active]="activePage === 'Profile'" (click)="navigateTo('Profile')">
+      <span class="material-icons-round">person</span>
+    </div>
+  </nav>
+</div>
+</div>
