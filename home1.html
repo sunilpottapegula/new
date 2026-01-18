@@ -1,0 +1,92 @@
+<div id="app-container" class="glass-panel" [class.mobile-frame]="isMobileMode">
+<div class="drawer-overlay" [class.active]="isDrawerOpen" (click)="toggleMenu()"></div>
+
+<div class="right-drawer" [class.active]="isDrawerOpen">
+  <div class="drawer-header">
+    <h3 class="brand-text">GIFT PRO</h3>
+    <span class="material-icons-round" (click)="toggleMenu()">close</span>
+  </div>
+
+  <div class="drawer-links">
+    <div class="nav-link" routerLink="/profile" routerLinkActive="active" (click)="toggleMenu()">
+      <span class="material-icons-round">person</span> Profile
+    </div>
+
+    <div class="nav-link" routerLink="/wallet" routerLinkActive="active" (click)="toggleMenu()">
+      <span class="material-icons-round">account_balance_wallet</span> Wallet
+    </div>
+
+    <div class="nav-link" routerLink="/settings" routerLinkActive="active" (click)="toggleMenu()">
+      <span class="material-icons-round">settings</span> Settings
+    </div>
+
+    <hr class="divider" />
+
+    <div class="nav-link logout-link" (click)="logout()">
+      <span class="material-icons-round">logout</span> Logout
+    </div>
+  </div>
+</div>
+
+<div class="app-content-wrapper">
+  <header>
+    <h2 class="logo">GIFT APP</h2>
+
+    <div class="header-controls">
+      <div class="header-toggle" title="Toggle Mobile/Web View">
+        <span class="material-icons-round">devices</span>
+        <label class="switch">
+          <input type="checkbox" (change)="toggleMobileMode()" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="header-toggle" title="Toggle Light/Dark Mode">
+        <span class="material-icons-round">dark_mode</span>
+        <label class="switch">
+          <input type="checkbox" (change)="toggleTheme()" />
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="icon-circle" (click)="toggleMenu()">
+        <span class="material-icons-round">menu</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="web-nav" *ngIf="!isMobileMode">
+    <div class="nav-link" routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">
+      <span class="material-icons-round">grid_view</span> Dashboard
+    </div>
+    <div class="nav-link" routerLink="/gift-wheel" routerLinkActive="active">
+      <span class="material-icons-round">auto_awesome</span> Gift Wheel
+    </div>
+    <div class="nav-link" routerLink="/earnings" routerLinkActive="active">
+      <span class="material-icons-round">payments</span> Earnings
+    </div>
+    <div class="nav-link" routerLink="/marketplace" routerLinkActive="active">
+      <span class="material-icons-round">storefront</span> Marketplace
+    </div>
+  </nav>
+
+  <div class="content-area">
+    <router-outlet></router-outlet>
+  </div>
+
+  <nav class="mobile-bottom-nav" *ngIf="isMobileMode">
+    <div class="nav-link" routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active">
+      <span class="material-icons-round">grid_view</span>
+    </div>
+    <div class="nav-link" routerLink="/gift-wheel" routerLinkActive="active">
+      <span class="material-icons-round">auto_awesome</span>
+    </div>
+    <div class="nav-link" routerLink="/marketplace" routerLinkActive="active">
+      <span class="material-icons-round">storefront</span>
+    </div>
+    <div class="nav-link" routerLink="/wallet" routerLinkActive="active">
+      <span class="material-icons-round">account_balance_wallet</span>
+    </div>
+  </nav>
+</div>
+</div>
