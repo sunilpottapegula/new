@@ -1,192 +1,222 @@
+/* --- 1. CORE WRAPPER & ANIMATIONS --- */
 .wallet-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
   animation: fadeIn 0.4s ease-out;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevents horizontal scroll on mobile */
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- 2. BALANCE CARD (Green-Brown-Red Gradient) --- */
 .balance-card {
-  background: linear-gradient(135deg, #facc15 0%, #78350f 50%, #0ea5e9 100%);
+  background: linear-gradient(135deg, #10b981 0%, #78350f 50%, #ef4444 100%);
   color: white;
   padding: 24px;
-  border-radius: 20px;
+  border-radius: 24px;
   margin-bottom: 20px;
   display: flex;
   justify-content: space-between;
-  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.2);
+  align-items: center;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .balance-content h1 {
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
+  font-size: clamp(1.4rem, 6vw, 2.5rem);
   font-weight: 800;
   margin: 5px 0;
-  transition: opacity 0.2s;
-}
-
-.fade-text {
-  opacity: 0.5;
+  letter-spacing: -1px;
 }
 
 .refresh-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: 0.3s;
 }
 
-.spinning {
-  animation: spin 0.8s infinite linear;
-}
+.refresh-btn:active { transform: scale(0.9); }
+.spinning { animation: spin 0.8s infinite linear; }
 
 @keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
+/* --- 3. CURRENCY SELECTOR (Glassy Pill) --- */
+.currency-selector-container {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.currency-selector-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.currency-dropdown {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  
+}
+
+.currency-suffix-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-light);
+  border-left: 1px solid rgba(255, 255, 255, 0.3);
+  padding-left: 10px;
+}
+
+/* --- 4. THE GLASS SECTION CARDS --- */
 .wallet-grid {
   display: grid;
   gap: 20px;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* Default Mobile */
+  width: 100%;
 }
 
-/* Switches to 2 columns only on Desktop Web Mode */
 @media (min-width: 768px) {
   .wallet-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.2fr; /* Desktop Ratio */
   }
 }
 
 .section-card {
-  background: var(--bg-card); /* Uses parent's variable */
-  border: 2px solid; /* Define width and style first */
-  border-image-source: radial-gradient(
-    circle at top left,
-    #064e3b,
-    #451a03,
-    #450a0a
-  );
-  border-image-slice: 1; /* This ensures the gradient fills the entire border */
-  border-radius: 16px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.03); 
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 20px;
   color: var(--text-dark);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Premium Border Glow Effect */
+.section-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  padding: 1.5px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent, rgba(255,255,255,0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* --- 5. TABS & ITEMS --- */
 .history-tabs {
   display: flex;
-  background: var(--bg-canvas);
+  background: rgba(0, 0, 0, 0.1);
   padding: 4px;
-  border-radius: 12px;
+  border-radius: 14px;
   margin-bottom: 15px;
 }
 
 .tab-btn {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   border: none;
   background: transparent;
   color: var(--text-light);
   font-weight: 700;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: 0.2s;
 }
 
 .tab-btn.active {
-  background: var(--bg-card);
-  color: var(--primary);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: var(--primary);
+  color: white;
 }
 
 .history-item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 12px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.amt-plus {
-  color: #10b981;
-  font-weight: 800;
-}
-.custom-input,
-.custom-select {
+/* --- 6. INPUTS & BUTTONS --- */
+.custom-input, .custom-select {
   width: 100%;
   padding: 12px;
-  border-radius: 10px;
+  border-radius: 12px;
   border: 1px solid var(--border);
-  background: var(--bg-canvas);
-  color: var(--text-dark);
+  background: rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  margin-top: 5px;
 }
 
 .btn-withdraw {
   width: 100%;
-  padding: 14px;
+  padding: 16px;
   background: var(--primary);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-weight: 700;
-  margin-top: 10px;
+  margin-top: 15px;
   cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
-/* Container to push everything to the right */
-.currency-selector-container {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  margin: 10px 0 20px 0;
-}
-
-/* Glassy Pill/Circular UI */
-.currency-selector-wrap {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 18px;
-  border-radius: 50px;
-
-  /* Glassmorphism */
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-}
-
-/* Dropdown Reset */
-.currency-dropdown {
-  background: transparent;
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
-  font-weight: 800;
-  cursor: pointer;
-  appearance: none; /* Removes default box */
-  -webkit-appearance: none;
-  padding: 0 5px;
-}
-
-/* Icon style */
+/* Decrease Icon Size */
 .glass-icon {
-  font-size: 1.2rem;
-  color: #10b981; /* Matches your green theme */
+  color: #10b981;
 }
 
-/* Label on the right */
-.currency-suffix-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-light);
-  border-left: 1px solid rgba(255, 255, 255, 0.3);
-  padding-left: 10px;
-  margin-left: 5px;
+/* --- 7. THEME ADAPTATION --- */
+[data-theme="light"] .section-card {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .history-tabs {
+  background: rgba(0, 0, 0, 0.05);
+}
+.input-label{
+  font-size: 12px;
+  
 }
