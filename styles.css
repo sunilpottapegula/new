@@ -1,0 +1,88 @@
+/* ==========================================================================
+   GLOBAL DESIGN SYSTEM & VARIABLES
+   ========================================================================== */
+
+   :root {
+    /* Branding Colors (Stay constant) */
+    --primary: #6366f1;
+    --secondary: #ec4899;
+    --success: #10b981;
+    --gold: #ffd700;
+  
+    /* --- DARK MODE (Default) --- */
+    --bg-deep: #020617;
+    --bg-gradient: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15), transparent 25%),
+                   radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.15), transparent 25%);
+    --text-main: #ffffff;
+    --text-muted: #94a3b8;
+    --glass: rgba(255, 255, 255, 0.06);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --drawer-bg: #0f172a;
+    --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    --primary-glow: rgba(99, 102, 241, 0.6);
+    --nav-active-bg: rgba(99, 102, 241, 0.15);
+  }
+  
+  /* --- LIGHT MODE OVERRIDES --- */
+  body.light-mode {
+    --bg-deep: #f0f4ff;
+    --bg-gradient: radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.1), transparent 30%),
+                   radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.1), transparent 30%);
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --glass: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(99, 102, 241, 0.2);
+    --drawer-bg: #ffffff;
+    --shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+    --primary-glow: rgba(99, 102, 241, 0.4);
+    --nav-active-bg: rgba(99, 102, 241, 0.1);
+  }
+  
+  /* ==========================================================================
+     BASE RESET & BODY STYLES
+     ========================================================================== */
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--bg-deep);
+    background-image: var(--bg-gradient);
+    background-attachment: fixed; /* Keeps gradient steady during scroll */
+    color: var(--text-main);
+    transition: background 0.3s ease, color 0.3s ease;
+    
+    /* Flexbox to center the app container */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+  
+  /* Logic for Mobile Frame (Triggered via class on body) */
+  body.mobile-mode #app-container {
+    max-width: 380px !important;
+    height: 800px !important; /* Adjusted slightly for better aspect ratio */
+    border: 10px solid #1e293b;
+    border-radius: 45px;
+    margin: 20px auto;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  /* Standard Header Fonts */
+  h1, h2, h3 {
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+  }
+  
+  p {
+    color: var(--text-muted);
+  }
