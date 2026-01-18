@@ -6,26 +6,37 @@
   ></div>
 
   <div class="right-drawer" [class.active]="isDrawerOpen">
-    <div class="drawer-header">
-      <h3 class="brand-text">GIFT PRO</h3>
-      <span class="material-icons-round" (click)="toggleMenu()">close</span>
+  <div class="drawer-header">
+    <h3 class="brand-text">GIFT PRO</h3>
+    <span class="material-icons-round" (click)="toggleMenu()">close</span>
+  </div>
+  
+  <div class="drawer-links">
+    <div class="nav-link" 
+         [class.active]="activePage === 'Profile'" 
+         (click)="navigateTo('Profile')">
+      <span class="material-icons-round">person</span> Profile
     </div>
-    <div class="drawer-links">
-      <div class="nav-link" (click)="navigateTo('Profile')">
-        <span class="material-icons-round">person</span> Profile
-      </div>
-      <div class="nav-link" (click)="navigateTo('Wallet')">
-        <span class="material-icons-round">wallet</span> Wallet
-      </div>
-      <div class="nav-link" (click)="navigateTo('Settings')">
-        <span class="material-icons-round">settings</span> Settings
-      </div>
-      <hr class="divider" />
-      <div class="nav-link logout-link" (click)="navigateTo('Logout')">
-        <span class="material-icons-round">logout</span> Logout
-      </div>
+    
+    <div class="nav-link" 
+         [class.active]="activePage === 'Wallet'" 
+         (click)="navigateTo('Wallet')">
+      <span class="material-icons-round">wallet</span> Wallet
+    </div>
+    
+    <div class="nav-link" 
+         [class.active]="activePage === 'Settings'" 
+         (click)="navigateTo('Settings')">
+      <span class="material-icons-round">settings</span> Settings
+    </div>
+    
+    <hr class="divider" />
+    
+    <div class="nav-link logout-link" (click)="navigateTo('Logout')">
+      <span class="material-icons-round">logout</span> Logout
     </div>
   </div>
+</div>
 
   <div class="app-content-wrapper">
     <header>
