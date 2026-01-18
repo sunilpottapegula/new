@@ -18,8 +18,7 @@
 /* --- Main App Container & Morphing Logic --- */
 #app-container {
   width: 100%;
-  max-width: 1200px; /* Standard Web Width */
-  height: 85vh;
+  height: 100vh;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -92,13 +91,17 @@ header {
   height: 18px;
 }
 
-.switch input { opacity: 0; width: 0; height: 0; }
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
 .slider {
   position: absolute;
   cursor: pointer;
   inset: 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(88, 52, 52, 0.61);
   transition: 0.4s;
   border-radius: 20px;
 }
@@ -110,13 +113,17 @@ header {
   width: 12px;
   left: 3px;
   bottom: 3px;
-  background: white;
+  background: rgb(22, 161, 53);
   transition: 0.4s;
   border-radius: 50%;
 }
 
-input:checked + .slider { background: var(--primary); }
-input:checked + .slider:before { transform: translateX(16px); }
+input:checked + .slider {
+  background: var(--primary);
+}
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
 
 /* --- Navigation Bars (Web & Mobile) --- */
 .web-nav {
@@ -165,7 +172,9 @@ input:checked + .slider:before { transform: translateX(16px); }
   display: none;
 }
 
-.drawer-overlay.active { display: block; }
+.drawer-overlay.active {
+  display: block;
+}
 
 .right-drawer {
   position: absolute;
@@ -180,7 +189,9 @@ input:checked + .slider:before { transform: translateX(16px); }
   border-left: 1px solid var(--glass-border);
 }
 
-.right-drawer.active { right: 0; }
+.right-drawer.active {
+  right: 0;
+}
 
 /* --- Content Area --- */
 .content-area {
@@ -199,4 +210,48 @@ input:checked + .slider:before { transform: translateX(16px); }
   color: var(--primary);
   margin-bottom: 20px;
   filter: drop-shadow(0 0 10px var(--primary-glow));
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between; /* Pushes brand-text to left and icon to right */
+  align-items: center; /* Vertically centers the text and icon */
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.drawer-header .material-icons-round {
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: color 0.3s ease;
+  padding: 5px; /* Makes it easier to tap on mobile */
+}
+
+.drawer-header .material-icons-round:hover {
+  color: var(--secondary); /* Optional: change color on hover */
+}
+
+.brand-text {
+  font-weight: 700;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.divider {
+  border: 0;
+  border-top: 1px solid var(--glass-border);
+  margin: 20px 0; /* 20px space on top and bottom */
+  width: 100%;
+}
+
+.logo {
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-link.logout-link .material-icons-round {
+  color: #ff4d4d; /* Ensures the icon is the same red */
 }
