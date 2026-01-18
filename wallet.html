@@ -1,0 +1,72 @@
+<div class="wallet-wrapper">
+<div class="balance-card">
+  <div class="balance-content">
+    <p>Available Balance</p>
+    <h1 [class.fade-text]="isSpinning">{{ displayBalance }}</h1>
+    <span class="verified-badge">✓ VERIFIED ACCOUNT</span>
+  </div>
+  <button class="refresh-btn" [class.spinning]="isSpinning" (click)="refreshWallet()">
+    <span class="material-icons-round">refresh</span>
+  </button>
+</div>
+
+<div class="currency-selector-container">
+<div class="currency-selector-wrap">
+<span class="currency-suffix-label">Currency :</span>
+  <span class="material-icons-round glass-icon">payments</span>
+  
+  <select class="currency-dropdown" [(ngModel)]="selectedCurrency" (change)="updateCurrency()">
+    <option value="USD">USD ($)</option>
+    <option value="INR">INR (₹)</option>
+    <option value="KWD">KWD (KD)</option>
+    <option value="KRW">KRW (₩)</option>
+  </select>
+
+</div>
+</div>
+
+<div class="wallet-grid">
+  <div class="section-card">
+    <h4>Withdraw Funds</h4>
+    <div class="input-group">
+      <label class="input-label">Payment Method</label>
+      <select class="custom-select" [(ngModel)]="withdrawMethod">
+        <option>PayPal</option>
+        <option>Bank Transfer</option>
+        <option>USDT (TRC20)</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Amount</label>
+      <input type="number" [(ngModel)]="withdrawAmount" placeholder="Min 50.00" class="custom-input">
+    </div>
+    <button class="btn-withdraw" (click)="processWithdrawal()">Confirm Withdrawal</button>
+  </div>
+
+  <div class="section-card">
+    <div class="history-tabs">
+      <button class="tab-btn" [class.active]="activeTab === 'earnings'" (click)="activeTab = 'earnings'">Earnings</button>
+      <button class="tab-btn" [class.active]="activeTab === 'deposits'" (click)="activeTab = 'deposits'">Deposits</button>
+      <button class="tab-btn" [class.active]="activeTab === 'withdrawals'" (click)="activeTab = 'withdrawals'">Withdraws</button>
+    </div>
+
+    <div class="tab-pane" *ngIf="activeTab === 'earnings'">
+      <div class="history-item">
+        <div class="item-info">
+          <p>Lucky Spin Win</p>
+          <small>Jan 16, 2026</small>
+        </div>
+        <div class="amt-plus">+$2.50</div>
+      </div>
+      <div class="history-item">
+        <div class="item-info">
+          <p>Daily Check-in</p>
+          <small>Jan 15, 2026</small>
+        </div>
+        <div class="amt-plus">+$0.50</div>
+      </div>
+    </div>
+
+    </div>
+</div>
+</div>
