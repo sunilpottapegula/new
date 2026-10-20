@@ -1,0 +1,21 @@
+# Secrets / local env
+.env
+*.env.local
+
+# Java
+target/
+*.class
+.idea/
+*.iml
+.vscode/
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+coverage/
+
+# Runtime data
+data/
+*.log
+.DS_Store
